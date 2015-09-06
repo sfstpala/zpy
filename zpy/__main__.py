@@ -1,4 +1,6 @@
 '''
+zpy - quickly encrypt files with your ssh identity
+
 Usage:
     zpy [options] encrypt [<filename>]
     zpy [options] decrypt [<filename>]

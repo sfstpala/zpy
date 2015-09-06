@@ -31,7 +31,7 @@ class EntryPointTest(unittest.TestCase):
     def test_invalid_argument(self, print):
         self.assertEqual(self.main(["--invalid-argument"]), 2)
         print.assert_called_once_with(
-            zpy.__main__.__doc__.split("\n\n")[0].strip(), file=sys.stderr)
+            zpy.__main__.__doc__.split("\n\n")[1].strip(), file=sys.stderr)
 
 
 if __name__ == "__main__":
