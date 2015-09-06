@@ -11,6 +11,7 @@ setuptools.setup(
     zip_safe=False,
     install_requires=[
         "docopt",
+        "pycrypto",
     ],
     entry_points={
         "console_scripts": [

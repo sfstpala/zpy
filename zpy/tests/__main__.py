@@ -12,7 +12,19 @@ class EntryPointTest(unittest.TestCase):
     dist = pkg_resources.get_distribution("zpy")
     main = staticmethod(dist.load_entry_point("console_scripts", "zpy"))
 
-    def test_main(self):
+    @unittest.mock.patch("zpy.encrypt.encrypt")
+    def test_encryt(self, encrypt):
+        encrypt.return_value = 0
+        self.assertEqual(self.main(["encrypt"]), 0)
+
+    @unittest.mock.patch("zpy.decrypt.decrypt")
+    def test_decryt(self, decrypt):
+        decrypt.return_value = 0
+        self.assertEqual(self.main(["decrypt"]), 0)
+
+    @unittest.mock.patch("docopt.docopt")
+    def test_main(self, docopt):
+        docopt.return_value = {}
         self.assertEqual(self.main([]), 0)
 
     @unittest.mock.patch("builtins.print")

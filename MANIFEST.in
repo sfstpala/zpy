@@ -1,3 +1,4 @@
+include README.md
 include Makefile
 include tox.ini
 include .coveragerc
