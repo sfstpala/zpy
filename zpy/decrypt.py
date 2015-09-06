@@ -8,8 +8,8 @@ from Crypto.Hash import HMAC, SHA256
 def decrypt_stream_v1(identity, stdin, stdout):
     magic = b"zpy\x01"  # this has already been read from stdin
     # the first 8 bytes of the input stream are the aes counter iv
-    iv = stdin.read(8)
-    ctr = Counter.new(64, iv)
+    iv = stdin.read(16)
+    ctr = Counter.new(128, initial_value=int.from_bytes(iv, "big"))
     key_size = stdin.read(2)
     key = stdin.read(int.from_bytes(key_size, "big"))
     header = magic + iv + key_size + key

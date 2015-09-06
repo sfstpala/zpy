@@ -23,7 +23,7 @@ class EncryptTest(unittest.TestCase):
         open.side_effect = lambda fn: contextlib.closing(f)
         stdin = io.BytesIO(b"\xEE" * 0xFFFF)
         stdout = io.BytesIO()
-        iv = b"\x00" * 8
+        iv = b"\x00" * 15 + b"\x01"
         key = b"\xFF" * 32
         new_Random.return_value = io.BytesIO(iv + key)
         new_PKCS1_OAEP.return_value.encrypt.return_value = b"\xAA"
@@ -32,17 +32,19 @@ class EncryptTest(unittest.TestCase):
         zpy.encrypt.encrypt_stream_v1("id", stdin, stdout)
         counter = new_Counter.return_value
         new_AES.assert_called_once_with(key, mode=6, counter=counter)
+        new_Counter.assert_called_once_with(
+            128, initial_value=int.from_bytes(iv, "big"))
         importKey.assert_called_once_with(b"")
         open.assert_called_once_with("id")
         res = binascii.hexlify(stdout.getvalue()).decode()
-        self.assertEqual(res[:34], (
+        self.assertEqual(res[:50], (
             "7a707901"  # magic
-            "0000000000000000"  # iv
+            "00000000000000000000000000000001"  # iv
             "0001"  # length of encrypted key
             "aa"  # encrypted key
             "ffff"  # length of the first chunk
         ))
-        self.assertEqual(res[34:-6], (
+        self.assertEqual(res[50:-6], (
             "ee"  # first encrypted chunk (65535 bytes)
         ) * 0xFFFF)
         self.assertEqual(res[-6:], (

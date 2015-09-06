@@ -9,10 +9,11 @@ from Crypto.Hash import HMAC, SHA256
 def encrypt_stream_v1(identity, stdin, stdout):
     magic = b"zpy\x01"
     rng = Random.new()
-    iv = rng.read(8)  # counter mode prefix
+    iv = rng.read(16)  # counter mode prefix
     key = rng.read(32)  # random AES-256 key
     # AES-256 in counter mode
-    aes = AES.new(key, mode=AES.MODE_CTR, counter=Counter.new(64, iv))
+    ctr = Counter.new(128, initial_value=int.from_bytes(iv, "big"))
+    aes = AES.new(key, mode=AES.MODE_CTR, counter=ctr)
     mac = HMAC.new(key, digestmod=SHA256)  # HMAC-SHA256 for ciphertext
     with open(identity) as f:
         # the AES-256 key is encrypte with the users rsa private key

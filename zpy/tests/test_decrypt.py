@@ -22,7 +22,7 @@ class DecryptTest(unittest.TestCase):
         open.side_effect = lambda fn: contextlib.closing(f)
         stdout = io.BytesIO()
         stdin = io.BytesIO(binascii.unhexlify((
-            "0000000000000000"  # iv
+            "00000000000000000000000000000001"  # iv
             "0001"  # length of encrypted key
             "aa"  # encrypted key
             "ffff"  # length of the first chunk
@@ -33,7 +33,7 @@ class DecryptTest(unittest.TestCase):
             "cc"
         )))
         key = b"\xFF" * 32
-        iv = b"\x00" * 8
+        iv = b"\x00" * 15 + b"\x01"
         new_PKCS1_OAEP.return_value.decrypt.return_value = b"\xFF" * 32
         new_AES.return_value.decrypt.side_effect = lambda x: x
         new_HMAC.return_value.digest.return_value = b"\xCC"
@@ -42,10 +42,11 @@ class DecryptTest(unittest.TestCase):
         importKey.assert_called_once_with(b"")
         open.assert_called_once_with("id")
         counter = new_Counter.return_value
-        new_Counter.assert_called_once_with(64, iv)
+        new_Counter.assert_called_once_with(
+            128, initial_value=int.from_bytes(iv, "big"))
         new_AES.assert_called_once_with(key, mode=6, counter=counter)
         stdin = io.BytesIO(binascii.unhexlify((
-            "0000000000000000"  # iv
+            "00000000000000000000000000000001"  # iv
             "0001"  # length of encrypted key
             "aa"  # encrypted key
             "ffff"  # length of the first chunk
