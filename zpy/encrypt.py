@@ -7,6 +7,7 @@ from Crypto.Hash import HMAC, SHA256
 
 
 def encrypt_stream_v1(identity, stdin, stdout):
+    magic = b"zpy\x01"
     rng = Random.new()
     iv = rng.read(8)  # counter mode prefix
     key = rng.read(32)  # random AES-256 key
@@ -18,7 +19,11 @@ def encrypt_stream_v1(identity, stdin, stdout):
         key = PKCS1_OAEP.new(RSA.importKey(f.read())).encrypt(key)
     # the output stream begins with the 8 byte iv, the length of the
     # encrypted AES-256 key in two bytes and the encrypted key itself
-    stdout.write(iv + len(key).to_bytes(2, "big") + key)
+    header = magic + iv + len(key).to_bytes(2, "big") + key
+    stdout.write(header)
+    # starting the hmac with the file header ensures the header cannot
+    # be modified (e.g. to downgrade the verification protocol)
+    mac.update(header)
     while True:
         # encrypt in chunks of 65535 bytes (a two byte integer)
         chunk = aes.encrypt(stdin.read(0xFFFF))
@@ -39,7 +44,6 @@ def encrypt(identity, filename, version=1):
     with open(filename, "rb") as stdin:
         with open("/dev/stdout", "wb") as stdout:
             if version == 1:
-                stdout.write(b"zpy\x01")
                 encrypt_stream_v1(identity, stdin, stdout)
             else:
                 raise RuntimeError("invalid version number")

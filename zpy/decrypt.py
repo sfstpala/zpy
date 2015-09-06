@@ -6,16 +6,21 @@ from Crypto.Hash import HMAC, SHA256
 
 
 def decrypt_stream_v1(identity, stdin, stdout):
+    magic = b"zpy\x01"  # this has already been read from stdin
     # the first 8 bytes of the input stream are the aes counter iv
-    ctr = Counter.new(64, stdin.read(8))
+    iv = stdin.read(8)
+    ctr = Counter.new(64, iv)
+    key_size = stdin.read(2)
+    key = stdin.read(int.from_bytes(key_size, "big"))
+    header = magic + iv + key_size + key
     with open(identity) as f:
         # read the encrypted symmetric key and decrypt it with
         # the rsa private key (the length depends on the key size)
-        key = PKCS1_OAEP.new(RSA.importKey(f.read())).decrypt(
-            stdin.read(int.from_bytes(stdin.read(2), "big")))
+        key = PKCS1_OAEP.new(RSA.importKey(f.read())).decrypt(key)
     # aes in counter mode and encrypt-then-mac
     aes = AES.new(key, mode=AES.MODE_CTR, counter=ctr)
     mac = HMAC.new(key, digestmod=SHA256)
+    mac.update(header)
     while True:
         # each variable length chunk begins with its length in 2 bytes
         # which limits the length to 0xffff (65535) bytes

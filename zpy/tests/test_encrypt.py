@@ -35,13 +35,14 @@ class EncryptTest(unittest.TestCase):
         importKey.assert_called_once_with(b"")
         open.assert_called_once_with("id")
         res = binascii.hexlify(stdout.getvalue()).decode()
-        self.assertEqual(res[:26], (
+        self.assertEqual(res[:34], (
+            "7a707901"  # magic
             "0000000000000000"  # iv
             "0001"  # length of encrypted key
             "aa"  # encrypted key
             "ffff"  # length of the first chunk
         ))
-        self.assertEqual(res[26:-6], (
+        self.assertEqual(res[34:-6], (
             "ee"  # first encrypted chunk (65535 bytes)
         ) * 0xFFFF)
         self.assertEqual(res[-6:], (
@@ -63,7 +64,6 @@ class EncryptTest(unittest.TestCase):
             unittest.mock.call("/dev/stdout", "wb"),
         ])
         encrypt_stream_v1.assert_called_once_with("id", stdin, stdout)
-        stdout.write.assert_called_once_with(b"zpy\x01")
 
     @unittest.mock.patch("builtins.open")
     def test_encrypt_invalid_header(self, open):
