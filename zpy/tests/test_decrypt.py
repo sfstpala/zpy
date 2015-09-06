@@ -8,18 +8,15 @@ import zpy.decrypt
 
 class DecryptTest(unittest.TestCase):
 
-    @unittest.mock.patch("builtins.open")
-    @unittest.mock.patch("Crypto.PublicKey.RSA.importKey")
+    @unittest.mock.patch("zpy.util.load_identity")
     @unittest.mock.patch("Crypto.Cipher.AES.new")
     @unittest.mock.patch("Crypto.Cipher.PKCS1_OAEP.new")
     @unittest.mock.patch("Crypto.Util.Counter.new")
     @unittest.mock.patch("Crypto.Hash.HMAC.new")
     def test_decrypt_stream_v1(
             self, new_HMAC, new_Counter, new_PKCS1_OAEP, new_AES,
-            importKey, open):
-        f = unittest.mock.Mock()
-        f.read.return_value = b""
-        open.side_effect = lambda fn: contextlib.closing(f)
+            load_identity):
+        load_identity.return_value = "..."
         stdout = io.BytesIO()
         stdin = io.BytesIO(binascii.unhexlify((
             "00000000000000000000000000000001"  # iv
@@ -39,8 +36,7 @@ class DecryptTest(unittest.TestCase):
         new_HMAC.return_value.digest.return_value = b"\xCC"
         zpy.decrypt.decrypt_stream_v1("id", stdin, stdout)
         self.assertEqual(stdout.getvalue(), b"\xEE" * 0xFFFF)
-        importKey.assert_called_once_with(b"")
-        open.assert_called_once_with("id")
+        load_identity.assert_called_once_with("id")
         counter = new_Counter.return_value
         new_Counter.assert_called_once_with(
             128, initial_value=int.from_bytes(iv, "big"))

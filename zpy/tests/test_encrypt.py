@@ -8,19 +8,16 @@ import zpy.encrypt
 
 class EncryptTest(unittest.TestCase):
 
-    @unittest.mock.patch("builtins.open")
     @unittest.mock.patch("Crypto.Random.new")
-    @unittest.mock.patch("Crypto.PublicKey.RSA.importKey")
+    @unittest.mock.patch("zpy.util.load_identity")
     @unittest.mock.patch("Crypto.Cipher.AES.new")
     @unittest.mock.patch("Crypto.Cipher.PKCS1_OAEP.new")
     @unittest.mock.patch("Crypto.Util.Counter.new")
     @unittest.mock.patch("Crypto.Hash.HMAC.new")
     def test_encrypt_stream_v1(
             self, new_HMAC, new_Counter, new_PKCS1_OAEP, new_AES,
-            importKey, new_Random, open):
-        f = unittest.mock.Mock()
-        f.read.return_value = b""
-        open.side_effect = lambda fn: contextlib.closing(f)
+            load_identity, new_Random):
+        load_identity.return_value = "..."
         stdin = io.BytesIO(b"\xEE" * 0xFFFF)
         stdout = io.BytesIO()
         iv = b"\x00" * 15 + b"\x01"
@@ -34,8 +31,7 @@ class EncryptTest(unittest.TestCase):
         new_AES.assert_called_once_with(key, mode=6, counter=counter)
         new_Counter.assert_called_once_with(
             128, initial_value=int.from_bytes(iv, "big"))
-        importKey.assert_called_once_with(b"")
-        open.assert_called_once_with("id")
+        load_identity.assert_called_once_with("id")
         res = binascii.hexlify(stdout.getvalue()).decode()
         self.assertEqual(res[:50], (
             "7a707901"  # magic

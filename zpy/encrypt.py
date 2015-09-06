@@ -1,9 +1,10 @@
 from Crypto import Random
 from Crypto.Cipher import PKCS1_OAEP
-from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from Crypto.Hash import HMAC, SHA256
+
+import zpy.util
 
 
 def encrypt_stream_v1(identity, stdin, stdout):
@@ -15,9 +16,8 @@ def encrypt_stream_v1(identity, stdin, stdout):
     ctr = Counter.new(128, initial_value=int.from_bytes(iv, "big"))
     aes = AES.new(key, mode=AES.MODE_CTR, counter=ctr)
     mac = HMAC.new(key, digestmod=SHA256)  # HMAC-SHA256 for ciphertext
-    with open(identity) as f:
-        # the AES-256 key is encrypte with the users rsa private key
-        key = PKCS1_OAEP.new(RSA.importKey(f.read())).encrypt(key)
+    # the AES-256 key is encrypte with the users rsa private key
+    key = PKCS1_OAEP.new(zpy.util.load_identity(identity)).encrypt(key)
     # the output stream begins with the 8 byte iv, the length of the
     # encrypted AES-256 key in two bytes and the encrypted key itself
     header = magic + iv + len(key).to_bytes(2, "big") + key

@@ -1,8 +1,9 @@
 from Crypto.Cipher import PKCS1_OAEP
-from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 from Crypto.Hash import HMAC, SHA256
+
+import zpy.util
 
 
 def decrypt_stream_v1(identity, stdin, stdout):
@@ -13,10 +14,9 @@ def decrypt_stream_v1(identity, stdin, stdout):
     key_size = stdin.read(2)
     key = stdin.read(int.from_bytes(key_size, "big"))
     header = magic + iv + key_size + key
-    with open(identity) as f:
-        # read the encrypted symmetric key and decrypt it with
-        # the rsa private key (the length depends on the key size)
-        key = PKCS1_OAEP.new(RSA.importKey(f.read())).decrypt(key)
+    # read the encrypted symmetric key and decrypt it with
+    # the rsa private key (the length depends on the key size)
+    key = PKCS1_OAEP.new(zpy.util.load_identity(identity)).decrypt(key)
     # aes in counter mode and encrypt-then-mac
     aes = AES.new(key, mode=AES.MODE_CTR, counter=ctr)
     mac = HMAC.new(key, digestmod=SHA256)
