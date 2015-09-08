@@ -1,5 +1,8 @@
 # Zpy
 
+[![Build](https://img.shields.io/travis/sfstpala/zpy.svg?style=flat-square)](https://travis-ci.org/sfstpala/zpy)
+[![Coverage](https://img.shields.io/coveralls/sfstpala/zpy.svg?style=flat-square)](https://coveralls.io/r/sfstpala/zpy)
+
 Quickly encrypt files with your ssh identity.
 
 Note: **This is experimental software!**
