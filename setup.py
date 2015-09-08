@@ -17,7 +17,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="zpy", version="0.0.0",
+    name="zpy", version="0.1.0",
     description="Quickly encrypt files with your ssh identity",
     packages=setuptools.find_packages(),
     test_suite="zpy.tests",
