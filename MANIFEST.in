@@ -5,3 +5,4 @@ include COPYING
 include Makefile
 include tox.ini
 include .coveragerc
+recursive-include doc *.md
