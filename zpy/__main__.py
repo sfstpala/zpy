@@ -10,6 +10,10 @@ Options:
     -i <identity>, --identity=<identity>
         ssh private key file [default: ~/.ssh/id_rsa]
 
+Examples:
+    zpy encrypt passwords.txt | base64 > passwords.zpy
+    base64 -d passwords.zpy | zpy decrypt > passwords.txt
+
 '''
 
 import sys
