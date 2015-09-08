@@ -57,7 +57,7 @@ To install zpy, you need Python 3.4 or later.
 
 ## Encrypting Files
 
-To encrypt a file with, simply type:
+To encrypt a file, simply type:
 
     zpy encrypt secrets.txt
 
@@ -90,7 +90,7 @@ determine whether the input is binary or not.
 
     zpy decrypt secrets.sqlite.zpy > secrets.sqlite
 
-If you have used a different identity for the encryption, provided it in
+If you have used a different identity for the encryption, provide it in
 the same way:
 
     cat secrets.txt.zpy | zpy -i ~/.ssh/my_other_id decrypt
