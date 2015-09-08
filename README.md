@@ -1,1 +1,3 @@
-# zpy - quickly encrypt files with your ssh identity
+# Zpy
+
+Quickly encrypt files with your ssh identity.
