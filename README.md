@@ -23,7 +23,7 @@ You can install zpy using pip:
 
 See also:
 
- - [Getting Started Guide](doc/getting_started.md)
+ - [**Getting Started Guide**](doc/getting_started.md)
 
 ## Development setup
 
@@ -34,16 +34,7 @@ Prerequisites are make, curl, python (3.4 or newer), and openssl.
 
 See also:
 
- - [Hacking Guide](doc/hacking.md)
-
-## Usage
-
-    Usage:
-        zpy [options] encrypt [<filename>] [-r]
-        zpy [options] decrypt [<filename>]
-        zpy (--help | --copying | --version)
-
-See [`__main__.py`](zpy/__main__.py) for more info.
+ - [**Hacking Guide**](doc/hacking.md)
 
 ## Copyright notice
 
