@@ -9,6 +9,8 @@ Quickly encrypt files with your ssh identity.
 Type `make test` to build zpy in a virtualenv and run the test suite.  
 Afte running `make`, you can run zpy by typing `bin/zpy`.
 
+Prerequisites are make, curl, python (3.4 or newer), and openssl.
+
 ## Usage
 
     Usage:
