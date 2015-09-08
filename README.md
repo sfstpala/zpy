@@ -12,17 +12,18 @@ Note: **This is experimental software!**
 
  - [**Download**](https://pypi.python.org/pypi/zpy)
  - [**Changelog**](CHANGELOG.md)
+ - [**Documentation**](doc/)
  - [**Builds on Travis-CI**](https://travis-ci.org/sfstpala/zpy)
 
 ## Installation
 
-The easiest way to install zpy is via PyPI:
+You can install zpy using pip:
 
     pip3 install zpy
 
-You need to have Python 3.4 (or later) installed. You also need OpenSSL if your SSH private key is encrypted.
+See also:
 
-The releases are signed with PGP. You can find my public key at [palazzo.link](https://palazzo.link).
+ - [Getting Started Guide](doc/getting_started.md)
 
 ## Development setup
 
@@ -30,6 +31,10 @@ Type `make test` to build zpy in a virtualenv and run the test suite.
 Afte running `make`, you can run zpy by typing `bin/zpy`.
 
 Prerequisites are make, curl, python (3.4 or newer), and openssl.
+
+See also:
+
+ - [Hacking Guide](doc/hacking.md)
 
 ## Usage
 
