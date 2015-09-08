@@ -2,7 +2,7 @@
 
 Quickly encrypt files with your ssh identity.
 
-> Warning: **this is experimental software.**
+Note: **This is experimental software!**
 
 ## Development setup
 
