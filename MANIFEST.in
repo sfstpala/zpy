@@ -1,4 +1,5 @@
 include README.md
+include DESCRIPTION.rst
 include COPYING
 include Makefile
 include tox.ini

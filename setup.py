@@ -13,12 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os.path
 import setuptools
 
+
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, "DESCRIPTION.rst")) as f:
+    long_description = f.read()
 
 setuptools.setup(
     name="zpy", version="0.1.0",
     description="Quickly encrypt files with your ssh identity",
+    long_description=long_description,
     packages=setuptools.find_packages(),
     test_suite="zpy.tests",
     author="Stefano Palazzo",
