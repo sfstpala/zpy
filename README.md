@@ -2,10 +2,21 @@
 
 [![Build](https://img.shields.io/travis/sfstpala/zpy.svg?style=flat-square)](https://travis-ci.org/sfstpala/zpy)
 [![Coverage](https://img.shields.io/coveralls/sfstpala/zpy.svg?style=flat-square)](https://coveralls.io/r/sfstpala/zpy)
+[![PyPI](https://img.shields.io/pypi/v/zpy.svg?style=flat-square)](https://pypi.python.org/pypi/pcr)
 
 Quickly encrypt files with your ssh identity.
 
 Note: **This is experimental software!**
+
+## Installation
+
+The easiest way to install zpy is via PyPI:
+
+    pip3 install zpy
+
+You need to have Python 3.4 (or later) installed. You also need OpenSSL if your SSH private key is encrypted.
+
+The releases are signed with PGP. You can find my public key at [palazzo.link](https://palazzo.link).
 
 ## Development setup
 
