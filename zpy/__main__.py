@@ -2,7 +2,7 @@
 zpy - quickly encrypt files with your ssh identity
 
 Usage:
-    zpy [options] encrypt [<filename>]
+    zpy [options] encrypt [<filename>] [-r]
     zpy [options] decrypt [<filename>]
     zpy (--help | --version)
 
@@ -10,9 +10,13 @@ Options:
     -i <identity>, --identity=<identity>
         ssh private key file [default: ~/.ssh/id_rsa]
 
+Encryption options:
+    -r, --raw   skip base64 encoding
+
 Examples:
-    zpy encrypt passwords.txt | base64 > passwords.zpy
-    base64 -d passwords.zpy | zpy decrypt > passwords.txt
+    zpy encrypt passwords.txt
+    zpy encrypt passwords.txt --raw > encrypted.bin
+    zpy decrypt encrypted.bin > passwords.txt
 
 '''
 
@@ -34,7 +38,8 @@ def main(args=None):
     if args.get("encrypt"):
         return zpy.encrypt.encrypt(
             os.path.expanduser(args["--identity"]),
-            os.path.expanduser(args["<filename>"] or "/dev/stdin"))
+            os.path.expanduser(args["<filename>"] or "/dev/stdin"),
+            raw=args["--raw"])
     if args.get("decrypt"):
         return zpy.decrypt.decrypt(
             os.path.expanduser(args["--identity"]),

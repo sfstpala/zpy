@@ -33,14 +33,14 @@ class EncryptTest(unittest.TestCase):
             128, initial_value=int.from_bytes(iv, "big"))
         load_identity.assert_called_once_with("id")
         res = binascii.hexlify(stdout.getvalue()).decode()
-        self.assertEqual(res[:50], (
-            "7a707901"  # magic
+        self.assertEqual(res[:54], (
+            "7a7079000001"  # magic
             "00000000000000000000000000000001"  # iv
             "0001"  # length of encrypted key
             "aa"  # encrypted key
             "ffff"  # length of the first chunk
         ))
-        self.assertEqual(res[50:-6], (
+        self.assertEqual(res[54:-6], (
             "ee"  # first encrypted chunk (65535 bytes)
         ) * 0xFFFF)
         self.assertEqual(res[-6:], (
@@ -48,15 +48,40 @@ class EncryptTest(unittest.TestCase):
             "cc"  # mac
         ))
 
-    @unittest.mock.patch("builtins.open")
     @unittest.mock.patch("zpy.encrypt.encrypt_stream_v1")
-    def test_encrypt(self, encrypt_stream_v1, open):
+    @unittest.mock.patch("zpy.util.EncodingWriter")
+    def test_encrypt_stream_v1_base64(self, EncodingWriter, encrypt_stream_v1):
+        writer = EncodingWriter.return_value.__enter__.return_value
+        stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
+        zpy.encrypt.encrypt_stream_v1_base64("id", stdin, stdout)
+        zpy.encrypt.encrypt_stream_v1.assert_called_once_with(
+            "id", stdin, writer)
+        EncodingWriter.assert_called_once_with(stdout)
+
+    @unittest.mock.patch("builtins.open")
+    @unittest.mock.patch("zpy.encrypt.encrypt_stream_v1_base64")
+    def test_encrypt(self, encrypt_stream_v1_base64, open):
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
         open.side_effect = [
             contextlib.closing(stdin),
             contextlib.closing(stdout),
         ]
         zpy.encrypt.encrypt("id", "/dev/stdin")
+        self.assertEqual(open.mock_calls, [
+            unittest.mock.call("/dev/stdin", "rb"),
+            unittest.mock.call("/dev/stdout", "wb"),
+        ])
+        encrypt_stream_v1_base64.assert_called_once_with("id", stdin, stdout)
+
+    @unittest.mock.patch("builtins.open")
+    @unittest.mock.patch("zpy.encrypt.encrypt_stream_v1")
+    def test_encrypt_raw(self, encrypt_stream_v1, open):
+        stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
+        open.side_effect = [
+            contextlib.closing(stdin),
+            contextlib.closing(stdout),
+        ]
+        zpy.encrypt.encrypt("id", "/dev/stdin", raw=True)
         self.assertEqual(open.mock_calls, [
             unittest.mock.call("/dev/stdin", "rb"),
             unittest.mock.call("/dev/stdout", "wb"),

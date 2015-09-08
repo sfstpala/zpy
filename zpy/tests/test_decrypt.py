@@ -55,11 +55,37 @@ class DecryptTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             zpy.decrypt.decrypt_stream_v1("id", stdin, stdout)
 
+    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1")
+    @unittest.mock.patch("zpy.util.DecodingReader")
+    def test_decrypt_stream_v1_base64(self, DecodingReader, decrypt_stream_v1):
+        reader = DecodingReader.return_value.__enter__.return_value
+        stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
+        zpy.decrypt.decrypt_stream_v1_base64("id", stdin, stdout)
+        zpy.decrypt.decrypt_stream_v1.assert_called_once_with(
+            "id", reader, stdout)
+        DecodingReader.assert_called_once_with(stdin)
+
+    @unittest.mock.patch("builtins.open")
+    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1_base64")
+    def test_decrypt(self, decrypt_stream_v1_base64, open):
+        stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
+        stdin.read.side_effect = [b"enB5", b"AAAB"]
+        open.side_effect = [
+            contextlib.closing(stdin),
+            contextlib.closing(stdout),
+        ]
+        zpy.decrypt.decrypt("id", "/dev/stdin")
+        self.assertEqual(open.mock_calls, [
+            unittest.mock.call("/dev/stdin", "rb"),
+            unittest.mock.call("/dev/stdout", "wb"),
+        ])
+        decrypt_stream_v1_base64.assert_called_once_with("id", stdin, stdout)
+
     @unittest.mock.patch("builtins.open")
     @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1")
-    def test_decrypt(self, decrypt_stream_v1, open):
+    def test_decrypt_raw(self, decrypt_stream_v1, open):
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
-        stdin.read.side_effect = [b"zpy\x01"]
+        stdin.read.side_effect = [b"zpy\x00", b"\x00\x01"]
         open.side_effect = [
             contextlib.closing(stdin),
             contextlib.closing(stdout),
@@ -74,7 +100,7 @@ class DecryptTest(unittest.TestCase):
     @unittest.mock.patch("builtins.open")
     def test_decrypt_invalid_header(self, open):
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
-        stdin.read.side_effect = [b"\x00\x00\x00\x00"]
+        stdin.read.side_effect = [b"\x00\x00\x00\x00", b"\x00\x00"]
         open.side_effect = [
             contextlib.closing(stdin),
             contextlib.closing(stdout),

@@ -7,8 +7,13 @@ from Crypto.Hash import HMAC, SHA256
 import zpy.util
 
 
+def encrypt_stream_v1_base64(identity, stdin, stdout):
+    with zpy.util.EncodingWriter(stdout) as stdout:
+        return encrypt_stream_v1(identity, stdin, stdout)
+
+
 def encrypt_stream_v1(identity, stdin, stdout):
-    magic = b"zpy\x01"
+    magic = b"zpy\x00\x00\x01"
     rng = Random.new()
     iv = rng.read(16)  # counter mode prefix
     key = rng.read(32)  # random AES-256 key
@@ -41,10 +46,12 @@ def encrypt_stream_v1(identity, stdin, stdout):
     stdout.write(b"\x00\x00" + mac.digest())
 
 
-def encrypt(identity, filename, version=1):
+def encrypt(identity, filename, version=1, raw=False):
     with open(filename, "rb") as stdin:
         with open("/dev/stdout", "wb") as stdout:
-            if version == 1:
+            if not raw and version == 1:
+                encrypt_stream_v1_base64(identity, stdin, stdout)
+            elif version == 1:
                 encrypt_stream_v1(identity, stdin, stdout)
             else:
                 raise RuntimeError("invalid version number")
