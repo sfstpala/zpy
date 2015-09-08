@@ -8,6 +8,12 @@ Quickly encrypt files with your ssh identity.
 
 Note: **This is experimental software!**
 
+## Links
+
+ - [**Download**](https://pypi.python.org/pypi/zpy)
+ - [**Changelog**](CHANGELOG.md)
+ - [**Builds on Travis-CI**](https://travis-ci.org/sfstpala/zpy)
+
 ## Installation
 
 The easiest way to install zpy is via PyPI:
