@@ -28,7 +28,7 @@ The releases are signed with PGP. You can find my public key at [palazzo.link](h
 
 Install the prerequisites:
 
-    sudo apt-get install make curl python3-dev
+    sudo apt-get install build-essential curl python3-dev
 
 Then run the test suite:
 
