@@ -26,19 +26,15 @@ The releases are signed with PGP. You can find my public key at [palazzo.link](h
 
 ## Development setup
 
-Type `make test` to build zpy in a virtualenv and run the test suite.  
+Install the prerequisites:
+
+    sudo apt-get install make curl python3-dev
+
+Then run the test suite:
+
+    make test
+
 Afte running `make`, you can run zpy by typing `bin/zpy`.
-
-Prerequisites are make, curl, python (3.4 or newer), and openssl.
-
-## Usage
-
-    Usage:
-        zpy [options] encrypt [<filename>] [-r]
-        zpy [options] decrypt [<filename>]
-        zpy (--help | --copying | --version)
-
-See [`__main__.py`](zpy/__main__.py) for more info.
 
 ## Copyright notice
 
