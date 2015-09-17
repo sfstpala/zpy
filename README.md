@@ -2,7 +2,7 @@
 
 [![Build](https://img.shields.io/travis/sfstpala/zpy.svg?style=flat-square)](https://travis-ci.org/sfstpala/zpy)
 [![Coverage](https://img.shields.io/coveralls/sfstpala/zpy.svg?style=flat-square)](https://coveralls.io/r/sfstpala/zpy)
-[![PyPI](https://img.shields.io/pypi/v/zpy.svg?style=flat-square)](https://pypi.python.org/pypi/pcr)
+[![PyPI](https://img.shields.io/pypi/v/zpy.svg?style=flat-square)](https://pypi.python.org/pypi/zpy)
 
 Quickly encrypt files with your ssh identity.
 
