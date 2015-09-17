@@ -4,7 +4,6 @@ This document describes the details of the encryption process and how Zpy reads 
 
 ## Encryption
 
-
 ### Version 1
 
 The encryption is RSA with AES-256-CTR and HMAC-SHA256.
