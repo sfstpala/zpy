@@ -1,5 +1,9 @@
 # Zpy Changelog
 
+## [Release 0.2.0](https://github.com/sfstpala/zpy/tree/0.2.0)
+
+- Added more documentation
+
 ## [Release 0.1.1](https://github.com/sfstpala/zpy/tree/0.1.1)
 
 - Release tags are signed
