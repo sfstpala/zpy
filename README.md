@@ -27,10 +27,10 @@ See also:
 
 ## Development setup
 
-Type `make test` to build zpy in a virtualenv and run the test suite.  
-Afte running `make`, you can run zpy by typing `bin/zpy`.
+    sudo apt-get install build-essential curl python3 python-dev
+    make wheels
 
-Prerequisites are make, curl, python (3.4 or newer), and openssl.
+The `wheels` target includes `all`, which builds the VirtualEnv, and `test`, which runs the entire test suite.
 
 See also:
 
