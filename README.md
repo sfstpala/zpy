@@ -27,10 +27,15 @@ See also:
 
 ## Development setup
 
-    sudo apt-get install build-essential curl python3 python-dev
-    make wheels
+Install the prerequisites:
 
-The `wheels` target includes `all`, which builds the VirtualEnv, and `test`, which runs the entire test suite.
+    sudo apt-get install build-essential curl python3-dev
+
+Then run the test suite:
+
+    make test
+
+Afte running `make`, you can run zpy by typing `bin/zpy`.
 
 See also:
 
