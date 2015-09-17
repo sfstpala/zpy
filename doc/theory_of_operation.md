@@ -4,6 +4,7 @@ This document describes the details of the encryption process and how Zpy reads 
 
 ## Encryption
 
+
 ### Version 1
 
 The encryption is RSA with AES-256-CTR and HMAC-SHA256.
@@ -28,6 +29,15 @@ We output the encrypted chunks.
 
 The HMAC is updated with every encrypted chunk (*Encrypt-then-MAC*). The last step is to output the
 HMAC digest.
+
+### Version 2
+
+Version 2 is exactly like version one, except:
+
+- Instead of 32 random bytes for the symmetric encryption key, we generate 64 bytes.
+
+The first half of the key is used for the AES encryption, the second half is used
+for the HMAC-SHA256 authentication
 
 ## File Format
 
@@ -66,3 +76,11 @@ for a ~128 KiB file:
 The last 32 bytes are the HMAC digest of the file after encryption without a length indicator:
 
     XX XX XX XX ... [32 bytes]
+
+### Version 2
+
+Version 2 files start with the following bytes:
+
+    7a 70 79 00 00 02
+
+Which is `enB5AAAC` in base64.

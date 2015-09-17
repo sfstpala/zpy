@@ -18,6 +18,7 @@ import unittest.mock
 import io
 import binascii
 import contextlib
+import Crypto.Hash
 import zpy.decrypt
 
 
@@ -28,7 +29,7 @@ class DecryptTest(unittest.TestCase):
     @unittest.mock.patch("Crypto.Cipher.PKCS1_OAEP.new")
     @unittest.mock.patch("Crypto.Util.Counter.new")
     @unittest.mock.patch("Crypto.Hash.HMAC.new")
-    def test_decrypt_stream_v1(
+    def test_decrypt_stream_v2(
             self, new_HMAC, new_Counter, new_PKCS1_OAEP, new_AES,
             load_identity):
         load_identity.return_value = "..."
@@ -44,18 +45,20 @@ class DecryptTest(unittest.TestCase):
             "0000"
             "cc"
         )))
-        key = b"\xFF" * 32
+        key = b"\xFF" * 32 + b"\xDD" * 32
         iv = b"\x00" * 15 + b"\x01"
-        new_PKCS1_OAEP.return_value.decrypt.return_value = b"\xFF" * 32
+        new_PKCS1_OAEP.return_value.decrypt.return_value = key
         new_AES.return_value.decrypt.side_effect = lambda x: x
         new_HMAC.return_value.digest.return_value = b"\xCC"
-        zpy.decrypt.decrypt_stream_v1("id", stdin, stdout)
+        zpy.decrypt.decrypt_stream_v2("id", stdin, stdout)
         self.assertEqual(stdout.getvalue(), b"\xEE" * 0xFFFF)
         load_identity.assert_called_once_with("id")
         counter = new_Counter.return_value
         new_Counter.assert_called_once_with(
             128, initial_value=int.from_bytes(iv, "big"))
-        new_AES.assert_called_once_with(key, mode=6, counter=counter)
+        new_AES.assert_called_once_with(b"\xFF" * 32, mode=6, counter=counter)
+        new_HMAC.assert_called_once_with(
+            b"\xDD" * 32, digestmod=Crypto.Hash.SHA256)
         stdin = io.BytesIO(binascii.unhexlify((
             "00000000000000000000000000000001"  # iv
             "0001"  # length of encrypted key
@@ -68,23 +71,23 @@ class DecryptTest(unittest.TestCase):
             "AAAA"  # invalid mac
         )))
         with self.assertRaises(RuntimeError):
-            zpy.decrypt.decrypt_stream_v1("id", stdin, stdout)
+            zpy.decrypt.decrypt_stream_v2("id", stdin, stdout)
 
-    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1")
+    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v2")
     @unittest.mock.patch("zpy.util.DecodingReader")
-    def test_decrypt_stream_v1_base64(self, DecodingReader, decrypt_stream_v1):
+    def test_decrypt_stream_v2_base64(self, DecodingReader, decrypt_stream_v2):
         reader = DecodingReader.return_value.__enter__.return_value
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
-        zpy.decrypt.decrypt_stream_v1_base64("id", stdin, stdout)
-        zpy.decrypt.decrypt_stream_v1.assert_called_once_with(
+        zpy.decrypt.decrypt_stream_v2_base64("id", stdin, stdout)
+        zpy.decrypt.decrypt_stream_v2.assert_called_once_with(
             "id", reader, stdout)
         DecodingReader.assert_called_once_with(stdin)
 
     @unittest.mock.patch("builtins.open")
-    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1_base64")
-    def test_decrypt(self, decrypt_stream_v1_base64, open):
+    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v2_base64")
+    def test_decrypt(self, decrypt_stream_v2_base64, open):
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
-        stdin.read.side_effect = [b"enB5", b"AAAB"]
+        stdin.read.side_effect = [b"enB5", b"AAAC"]
         open.side_effect = [
             contextlib.closing(stdin),
             contextlib.closing(stdout),
@@ -94,13 +97,13 @@ class DecryptTest(unittest.TestCase):
             unittest.mock.call("/dev/stdin", "rb"),
             unittest.mock.call("/dev/stdout", "wb"),
         ])
-        decrypt_stream_v1_base64.assert_called_once_with("id", stdin, stdout)
+        decrypt_stream_v2_base64.assert_called_once_with("id", stdin, stdout)
 
     @unittest.mock.patch("builtins.open")
-    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v1")
-    def test_decrypt_raw(self, decrypt_stream_v1, open):
+    @unittest.mock.patch("zpy.decrypt.decrypt_stream_v2")
+    def test_decrypt_raw(self, decrypt_stream_v2, open):
         stdin, stdout = unittest.mock.Mock(), unittest.mock.Mock()
-        stdin.read.side_effect = [b"zpy\x00", b"\x00\x01"]
+        stdin.read.side_effect = [b"zpy\x00", b"\x00\x02"]
         open.side_effect = [
             contextlib.closing(stdin),
             contextlib.closing(stdout),
@@ -110,7 +113,7 @@ class DecryptTest(unittest.TestCase):
             unittest.mock.call("/dev/stdin", "rb"),
             unittest.mock.call("/dev/stdout", "wb"),
         ])
-        decrypt_stream_v1.assert_called_once_with("id", stdin, stdout)
+        decrypt_stream_v2.assert_called_once_with("id", stdin, stdout)
 
     @unittest.mock.patch("builtins.open")
     def test_decrypt_invalid_header(self, open):

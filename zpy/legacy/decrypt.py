@@ -21,16 +21,15 @@ from Crypto.Util import Counter
 from Crypto.Hash import HMAC, SHA256
 
 import zpy.util
-import zpy.legacy.decrypt
 
 
-def decrypt_stream_v2_base64(identity, stdin, stdout):
+def decrypt_stream_v1_base64(identity, stdin, stdout):
     with zpy.util.DecodingReader(stdin) as stdin:
-        return decrypt_stream_v2(identity, stdin, stdout)
+        return decrypt_stream_v1(identity, stdin, stdout)
 
 
-def decrypt_stream_v2(identity, stdin, stdout):
-    magic = b"zpy\x00\x00\x02"  # this has already been read from stdin
+def decrypt_stream_v1(identity, stdin, stdout):
+    magic = b"zpy\x00\x00\x01"  # this has already been read from stdin
     # the first 8 bytes of the input stream are the aes counter iv
     iv = stdin.read(16)
     ctr = Counter.new(128, initial_value=int.from_bytes(iv, "big"))
@@ -41,10 +40,8 @@ def decrypt_stream_v2(identity, stdin, stdout):
     # the rsa private key (the length depends on the key size)
     key = PKCS1_OAEP.new(zpy.util.load_identity(identity)).decrypt(key)
     # aes in counter mode and encrypt-then-mac
-    key_aes = key[:32]
-    key_mac = key[32:]
-    aes = AES.new(key_aes, mode=AES.MODE_CTR, counter=ctr)
-    mac = HMAC.new(key_mac, digestmod=SHA256)
+    aes = AES.new(key, mode=AES.MODE_CTR, counter=ctr)
+    mac = HMAC.new(key, digestmod=SHA256)
     mac.update(header)
     while True:
         # each variable length chunk begins with its length in 2 bytes
@@ -58,25 +55,3 @@ def decrypt_stream_v2(identity, stdin, stdout):
     # the last 32 bytes of the message are the ciphertext hmac
     if not hmac.compare_digest(mac.digest(), stdin.read(32)):
         raise RuntimeError("hmac error")
-
-
-def decrypt(identity, filename):
-    with open(filename, "rb") as stdin:
-        with open("/dev/stdout", "wb") as stdout:
-            header = stdin.read(4)
-            if header == b"enB5":
-                header += stdin.read(4)
-            else:
-                header += stdin.read(2)
-            if header == b"enB5AAAB":
-                zpy.legacy.decrypt.decrypt_stream_v1_base64(
-                    identity, stdin, stdout)
-            elif header == b"zpy\x00\x00\x01":
-                zpy.legacy.decrypt.decrypt_stream_v1(identity, stdin, stdout)
-            elif header == b"enB5AAAC":
-                decrypt_stream_v2_base64(identity, stdin, stdout)
-            elif header == b"zpy\x00\x00\x02":
-                decrypt_stream_v2(identity, stdin, stdout)
-            else:
-                raise RuntimeError("invalid file header")
-    return 0
