@@ -6,13 +6,28 @@ This document describes the details of the encryption process and how Zpy reads 
 
 ### Version 1
 
-TBD
+The encryption is RSA with AES-256-CTR and HMAC-SHA256.
 
-## Decryption
+Zpy will initialize a secure random number generator (using `/dev/urandom`) and generate the following:
 
-### Version 1
+- 16 byte initialization vector
+- 32 byte random symmetric key
 
-TBD
+It will then generate an AES Counter object, the initial value of which is the IV generated earlier, and
+an HMAC-SHA256 object with the 32 byte random symmetric key.
+
+Next we load the users SSH key pair and use the public key to encrypt the symmetric key, giving us the
+encrypted symmetric key.
+
+We output the IV and the encrypted symmetric key.
+
+The data is then encrypted using AES256 in counter mode and with the random symmetric key. There is no
+additional padding.
+
+We output the encrypted chunks.
+
+The HMAC is updated with every encrypted chunk (*Encrypt-then-MAC*). The last step is to output the
+HMAC digest.
 
 ## File Format
 
