@@ -22,7 +22,7 @@ on your system:
     make clean
 
 The VirtualEnv is installed in the current directory. The python interpreter is `bin/python` and zpy is
-available at `bin/zpy?`.
+available at `bin/zpy`.
 
 To install a release version of the program from source, build the Wheel and install it using pip:
 
