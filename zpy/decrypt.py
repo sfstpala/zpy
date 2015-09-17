@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hmac
+
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
@@ -51,7 +53,7 @@ def decrypt_stream_v1(identity, stdin, stdout):
         if not chunk:
             break
     # the last 32 bytes of the message are the ciphertext hmac
-    if mac.digest() != stdin.read(32):
+    if not hmac.compare_digest(mac.digest(), stdin.read(32)):
         raise RuntimeError("hmac error")
 
 
