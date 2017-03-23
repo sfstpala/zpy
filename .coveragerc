@@ -1,8 +1,6 @@
 [run]
 branch = True
-source =
-    zpy
-    setup.py
+source = zpy
 
 [report]
 show_missing = True

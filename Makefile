@@ -23,25 +23,21 @@ bin/pip: bin/python
 bin/python:
 	$(python) -m venv . --without-pip
 
-test: all
-	$(MAKE) coverage
-	$(MAKE) flake8
-	$(MAKE) check
-coverage: all bin/coverage
+test: all bin/coverage bin/pylama bin/check-manifest bin/rst2xml.py
 	bin/coverage run setup.py test
 	bin/coverage html
-	bin/coverage report --fail-under=100
+	bin/coverage report
+	bin/pylama setup.py pcr
+	bin/check-manifest
+	bin/python setup.py check -mrs
 bin/coverage: bin/pip
 	bin/pip install coverage
-flake8: bin/flake8
-	bin/flake8 --max-complexity=10 setup.py zpy
-bin/flake8: bin/pip
-	bin/pip install flake8
-check: bin/check-manifest
-	bin/check-manifest
-	bin/python setup.py check -ms
+bin/pylama: bin/pip
+	bin/pip install pylama
 bin/check-manifest: bin/pip
 	bin/pip install check-manifest
+bin/rst2xml.py: bin/pip
+	bin/pip install docutils
 
 wheels: all test
 	rm -rf wheelhouse; bin/pip wheel .
