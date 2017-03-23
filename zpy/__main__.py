@@ -13,8 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-'''
-zpy - quickly encrypt files with your ssh identity
+"""
+zpy - quickly encrypt files with your ssh identity.
 
 Usage:
     zpy [options] encrypt [<filename>] [-r]
@@ -38,7 +38,7 @@ Copyright notice:
     This program comes with ABSOLUTELY NO WARRANTY;
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `zpy --copying` for details.
-'''
+"""
 
 import sys
 import os

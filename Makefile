@@ -27,7 +27,7 @@ test: all bin/coverage bin/pylama bin/check-manifest bin/rst2xml.py
 	bin/coverage run setup.py test
 	bin/coverage html
 	bin/coverage report
-	bin/pylama setup.py pcr
+	bin/pylama setup.py zpy
 	bin/check-manifest
 	bin/python setup.py check -mrs
 bin/coverage: bin/pip
