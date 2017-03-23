@@ -40,7 +40,7 @@ bin/rst2xml.py: bin/pip
 	bin/pip install docutils
 
 wheels: all test
-	rm -rf wheelhouse; bin/pip wheel .
+	rm -rf wheelhouse; bin/pip wheel -w wheelhouse .
 
 clean:
 	rm -rf dist build *.egg-info $(shell find zpy -name __pycache__)
