@@ -31,12 +31,7 @@ To install a release version of the program from source, build the Wheel and ins
 
 ## Tests
 
-Note that `make test` will fail if the code coverage is not 100%. The `test` target also includes `flake8`
-and `check`, which you can run separately.
-
-    make coverage
-    make flake8
-    make check
+Note that `make test` will fail if the code coverage is not 100%. The `test` target also runs various checks.
 
 The tests are included with the module at `zpy.tests`.
 
