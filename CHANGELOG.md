@@ -1,5 +1,9 @@
 # Zpy Changelog
 
+## [Release 0.4.0](https://github.com/sfstpala/zpy/tree/0.4.0)
+
+- Clarified help text on the --identiy flag, which can read either a private or a public key file.
+
 ## [Release 0.3.0](https://github.com/sfstpala/zpy/tree/0.3.0)
 
 - Introduces protocol version 2, which adds a second random key for authentication (see [Theory of Operation](doc/theory_of_operation.md))
