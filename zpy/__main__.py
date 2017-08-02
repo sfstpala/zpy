@@ -23,7 +23,7 @@ Usage:
 
 Options:
     -i <identity>, --identity=<identity>
-        ssh private key file [default: ~/.ssh/id_rsa]
+        ssh private or public key file [default: ~/.ssh/id_rsa]
 
 Encryption options:
     -r, --raw   skip base64 encoding
@@ -31,6 +31,7 @@ Encryption options:
 Examples:
     zpy encrypt passwords.txt
     zpy encrypt passwords.txt --raw > encrypted.bin
+    zpy encrypt -i id_rsa.pub message.txt > message.zpy
     zpy decrypt encrypted.bin > passwords.txt
 
 Copyright notice:
