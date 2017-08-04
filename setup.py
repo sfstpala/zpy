@@ -22,7 +22,7 @@ with open(os.path.join(here, "DESCRIPTION.rst")) as f:
     long_description = f.read()
 
 setuptools.setup(
-    name="zpy", version="0.4.0",
+    name="zpy", version="0.5.0",
     description="Quickly encrypt files with your ssh identity",
     long_description=long_description,
     packages=setuptools.find_packages(),
